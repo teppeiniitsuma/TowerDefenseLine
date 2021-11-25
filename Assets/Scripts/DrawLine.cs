@@ -49,7 +49,7 @@ public class DrawLine : MonoBehaviour {
     private bool isEnemyMove = false;
 
     private void EnemyMove(Vector3[] lines) {
-        if(count == lines.Length - 1) { isEnemyMove = false; count = 0; }
+        if(count == lines.Length) { isEnemyMove = false; count = 0; }
         enemy.position = Vector3.MoveTowards(enemy.position, lines[count], Time.deltaTime * 2f);
         if(enemy.position == lines[count]) {
             count++;
@@ -61,6 +61,7 @@ public class DrawLine : MonoBehaviour {
     void Update() {
 
         if (Input.GetMouseButton(0)) {
+            if (count != 0) count = 0;
             mouseObj.SetActive(true);
             isEnemyMove = false;
             isline = true;

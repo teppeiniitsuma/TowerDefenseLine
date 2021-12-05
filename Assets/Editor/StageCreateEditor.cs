@@ -55,6 +55,16 @@ public class StageCreateEditor : Editor {
             if(data.lineEndTrans != null) {
                 data.lineEndPos = EditorGUILayout.Vector2Field("Pos", data.lineEndTrans.position);
             }
+            GUILayout.Box("", GUILayout.Height(2), GUILayout.ExpandWidth(true));
+            EditorGUILayout.Space();
+
+            // Enemy Parameter Setting
+            data.enemyGeneratTime = EditorGUILayout.FloatField("Enemy Generat Time", data.enemyGeneratTime);
+            data.enemyHealth = EditorGUILayout.FloatField("Enemy HP", data.enemyHealth);
+            data.enemyMoveSpeed = EditorGUILayout.FloatField("Enemy Move Speed", data.enemyMoveSpeed);
+            GUILayout.Box("", GUILayout.Height(2), GUILayout.ExpandWidth(true));
+            EditorGUILayout.Space();
+
 
         }
         EditorGUILayout.Space();

@@ -22,5 +22,3 @@ MonoBehaviour:
   lineEndTrans: {fileID: 0}
   lineStartPos: {x: 0, y: 0}
   lineEndPos: {x: 0, y: 0}
-  enemyHealth: 0
-  enemyMoveSpeed: 0

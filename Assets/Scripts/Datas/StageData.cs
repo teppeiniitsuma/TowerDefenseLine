@@ -22,4 +22,9 @@ public class StageData : ScriptableObject {
     public Vector2 lineStartPos;
     public Vector2 lineEndPos;
 
+    // Enemy Parameter
+    public float enemyGeneratTime;
+    public float enemyHealth;
+    public float enemyMoveSpeed;
+
 }

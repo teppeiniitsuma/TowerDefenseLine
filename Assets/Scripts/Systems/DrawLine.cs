@@ -5,11 +5,12 @@ using UnityEngine;
 public class DrawLine : MonoBehaviour {
     
     [SerializeField] private GameObject mouseObj;
+    [SerializeField] private Transform[] displayPoints;
     
     private LineRenderer lineRenderer;
-    private int positionCount;
     private Camera mainCamera;
     private Transform mousePos;
+    private int positionCount;
     private bool isline = false;
 
     void Start() {
@@ -45,21 +46,13 @@ public class DrawLine : MonoBehaviour {
         return false;
     }
 
-    [SerializeField] private Transform enemy;
     private bool isEnemyMove = false;
-
-    private void EnemyMove(Vector3[] lines) {
-        if(count == lines.Length) { isEnemyMove = false; count = 0; }
-        enemy.position = Vector3.MoveTowards(enemy.position, lines[count], Time.deltaTime * 2f);
-        if(enemy.position == lines[count]) {
-            count++;
-        }
-    }
 
     private Vector3[] lines;
     int count = 0;
-    void Update() {
 
+    void Update() {
+        if(StageManager.Instance.GetState == StateType.EnemyMove) return; 
         if (Input.GetMouseButton(0)) {
             if (count != 0) count = 0;
             mouseObj.SetActive(true);
@@ -68,13 +61,17 @@ public class DrawLine : MonoBehaviour {
             var pos = Input.mousePosition;
             pos.z = 10.0f;
             pos = mainCamera.ScreenToWorldPoint(pos);
+
+            if (pos.y < displayPoints[1].position.y || displayPoints[0].position.y < pos.y) return;
             pos = transform.InverseTransformPoint(pos);
+
             mousePos.position = pos;
             if(!PositionAddCheck(pos)) { return; }
 
             positionCount++;
             lineRenderer.positionCount = positionCount;
             lineRenderer.SetPosition(positionCount - 1, pos);
+            StageManager.Instance.linePosList.Add(pos);
         }
         if (!(Input.GetMouseButton(0))) {
             if (isline) {
@@ -82,14 +79,13 @@ public class DrawLine : MonoBehaviour {
                 isEnemyMove = true;
                 lines = new Vector3[lineRenderer.positionCount];
                 lineRenderer.GetPositions(lines);
-                enemy.gameObject.SetActive(true);
-                enemy.position = lineRenderer.GetPosition(0);
                 isline = false;
+                StageManager.Instance.StateChange(StateType.LineEnd);
             }
             positionCount = 0;
             mouseObj.SetActive(false);
             if (isEnemyMove) {
-                EnemyMove(lines);
+                StageManager.Instance.StateChange(StateType.EnemyMove);
             }
             //lineRenderer.positionCount = positionCount;
         }

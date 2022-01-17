@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9f0db809bc0a6f4281820a009f8992f, type: 3}
   m_Name: StageData
   m_EditorClassIdentifier: 
-  enemySprite: {fileID: 0}
-  backGroundSprite: {fileID: 0}
-  stageName: 
-  enemyValue: 0
+  enemySprite: {fileID: 21300000, guid: cc252537d6629db4faa0192e3ef51156, type: 3}
+  backGroundSprite: {fileID: 21300000, guid: 861dc94537b5bdd48a1c6d491b75c1b6, type: 3}
+  stageName: Stage1
+  enemyValue: 20
   lineColor: {r: 0, g: 0, b: 0, a: 1}
   lineOverlap: 0
   lineStartTrans: {fileID: 0}
   lineEndTrans: {fileID: 0}
-  lineStartPos: {x: 0, y: 0}
-  lineEndPos: {x: 0, y: 0}
-  enemyHealth: 0
-  enemyMoveSpeed: 0
+  lineStartPos: {x: -1.67, y: 3}
+  lineEndPos: {x: 1.71, y: 3}
+  enemyGeneratTime: 0.5
+  enemyHealth: 3
+  enemyMoveSpeed: 1

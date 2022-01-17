@@ -9,6 +9,8 @@ public class EnemyGenerator {
         var obj = Object.Instantiate(generatEnemy, StageManager.Instance.GetStageData.lineStartPos, Quaternion.identity);
         // sprite Set
         obj.GetComponent<SpriteRenderer>().sprite = StageManager.Instance.GetStageData.enemySprite;
+        var coll = obj.AddComponent<BoxCollider2D>();
+        coll.isTrigger = true;
         obj.SetActive(false);
         return obj;
     }

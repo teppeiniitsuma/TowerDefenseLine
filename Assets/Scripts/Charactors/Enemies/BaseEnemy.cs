@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 
 public interface IDamager {
@@ -12,6 +13,8 @@ public abstract class BaseEnemy : MonoBehaviour, IDamager {
     protected float health;
     protected float moveSpeed;
     protected int moveCount = 0;
+    // ìñÇΩÇ¡ÇΩé©åRÇÃñºëOÇì¸ÇÍÇÈ
+    private List<string> _soldierList = new List<string>();
 
     protected virtual void Awake() {
         health = StageManager.Instance.GetStageData.enemyHealth;
@@ -19,6 +22,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamager {
     }
     public virtual void ApplyDamage() {
         health--;
+        Debug.Log("í…Ç¢:" + health.ToString());
         if (health <= 0) { 
             gameObject.SetActive(false);
             Debug.Log("éÄñSèàóù");
@@ -30,7 +34,12 @@ public abstract class BaseEnemy : MonoBehaviour, IDamager {
     /// Åié¿ëïï™ÇØÇµÇΩÇ¢ÇØÇ«ç°âÒÇÕÉxÉ^ë≈ÇøÅj
     /// </summary>
     protected virtual void EnemyMove(Vector3[] movePos) {
-        if(movePos.Length == moveCount) { this.gameObject.SetActive(false); return; }
+        if(movePos.Length == moveCount) { 
+            gameObject.SetActive(false);
+            StageManager.Instance.StateChange(StateType.GameOver);
+            Debug.Log("test");
+            return;
+        }
         transform.position = Vector3.MoveTowards(transform.position, movePos[moveCount], Time.deltaTime * moveSpeed);
         if(transform.position == movePos[moveCount]) { moveCount++; }
     }
@@ -39,6 +48,23 @@ public abstract class BaseEnemy : MonoBehaviour, IDamager {
         if(StageManager.Instance.GetState == StateType.EnemyMove) {
             EnemyMove(StageManager.Instance.linePosList.ToArray());
         }
+        Debug.Log(_soldierList.Count);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision) {
+        if (_soldierList.Contains(collision.gameObject.name)) { Debug.Log("ä˘Ç…Ç†ÇÈÇÊÇÒ"); return; }
+        var att = collision.gameObject.GetComponent<IAttaker>();
+        if (att == null) return;
+        att.AddAttack(ApplyDamage);
+        _soldierList.Add(collision.gameObject.transform.parent.name);
+    }
+
+    private void OnTriggerExit2D(Collider2D collision) {
+        var att = collision.gameObject.GetComponent<IAttaker>();
+        if (att == null) return;
+        att.DeleteAttack(ApplyDamage);
+        // ìoò^ÇµÇΩñºëOÇè¡Ç∑ÉìÉS
+        _soldierList.Remove(collision.gameObject.transform.parent.name);
     }
 
 }

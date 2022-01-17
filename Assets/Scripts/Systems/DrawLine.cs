@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class DrawLine : MonoBehaviour {
     
-    [SerializeField] private GameObject mouseObj;
-    [SerializeField] private Transform[] displayPoints;
-    
-    private LineRenderer lineRenderer;
-    private Camera mainCamera;
-    private Transform mousePos;
-    private int positionCount;
-    private bool isline = false;
+    [SerializeField] private SpriteRenderer _mouseObj;
+    [SerializeField] private Transform[] _displayPoints;
+    [SerializeField] private LineStartPosCheck linePosCheck;
+
+    private LineRenderer _lineRenderer;
+    private Camera _mainCamera;
+    private Transform _mousePos;
+    private int _positionCount;
+    private bool _isline = false;
 
     void Start() {
         Init();
@@ -19,27 +20,27 @@ public class DrawLine : MonoBehaviour {
 
     private void Init() {
         // LineRender setting
-        lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.useWorldSpace = false;
-        lineRenderer.numCapVertices = 10;
-        lineRenderer.numCornerVertices = 10;
-        positionCount = 0;
+        _lineRenderer = GetComponent<LineRenderer>();
+        _lineRenderer.useWorldSpace = false;
+        _lineRenderer.numCapVertices = 10;
+        _lineRenderer.numCornerVertices = 10;
+        _positionCount = 0;
 
-        mainCamera = Camera.main;
-        mousePos = mouseObj.transform;
-        transform.position = mainCamera.transform.position + mainCamera.transform.forward * 10;
-        transform.rotation = mainCamera.transform.rotation;
+        _mainCamera = Camera.main;
+        _mousePos = _mouseObj.transform;
+        transform.position = _mainCamera.transform.position + _mainCamera.transform.forward * 10;
+        transform.rotation = _mainCamera.transform.rotation;
     }
 
     private bool PositionAddCheck(Vector3 pos) {
-        var previousPos = lineRenderer.GetPosition(lineRenderer.positionCount - 1);
+        var previousPos = _lineRenderer.GetPosition(_lineRenderer.positionCount - 1);
         if (pos == previousPos) return false;
         return true;
     }
 
     private bool LineOverlapDetection(Vector3 pos) {
-        var lineDatas = new Vector3[lineRenderer.positionCount];
-        lineRenderer.GetPositions(lineDatas);
+        var lineDatas = new Vector3[_lineRenderer.positionCount];
+        _lineRenderer.GetPositions(lineDatas);
         foreach(var line in lineDatas) {
             if(pos == line) { return true; }
         }
@@ -52,38 +53,43 @@ public class DrawLine : MonoBehaviour {
     int count = 0;
 
     void Update() {
-        if(StageManager.Instance.GetState == StateType.EnemyMove) return; 
+        if (StageManager.Instance.GetState == StateType.Pause || 
+            StageManager.Instance.GetState == StateType.GameOver ||
+            StageManager.Instance.GetState == StateType.EnemyMove) return;
+        
         if (Input.GetMouseButton(0)) {
             if (count != 0) count = 0;
-            mouseObj.SetActive(true);
-            isEnemyMove = false;
-            isline = true;
+            _mouseObj.enabled = true;
+            // line位置チェック
             var pos = Input.mousePosition;
             pos.z = 10.0f;
-            pos = mainCamera.ScreenToWorldPoint(pos);
+            pos = _mainCamera.ScreenToWorldPoint(pos);
 
-            if (pos.y < displayPoints[1].position.y || displayPoints[0].position.y < pos.y) return;
+            if (pos.y < _displayPoints[1].position.y || _displayPoints[0].position.y < pos.y) return;
             pos = transform.InverseTransformPoint(pos);
 
-            mousePos.position = pos;
+            _mousePos.position = pos;
             if(!PositionAddCheck(pos)) { return; }
+            if (!linePosCheck.GetPosCheck) return;
 
-            positionCount++;
-            lineRenderer.positionCount = positionCount;
-            lineRenderer.SetPosition(positionCount - 1, pos);
+            isEnemyMove = false;
+            _isline = true;
+            _positionCount++;
+            _lineRenderer.positionCount = _positionCount;
+            _lineRenderer.SetPosition(_positionCount - 1, pos);
             StageManager.Instance.linePosList.Add(pos);
         }
         if (!(Input.GetMouseButton(0))) {
-            if (isline) {
+            if (_isline) {
                 /*Debug.Log(LineOverlapDetection(lineRenderer.GetPosition(lineRenderer.positionCount - 1)));*/
                 isEnemyMove = true;
-                lines = new Vector3[lineRenderer.positionCount];
-                lineRenderer.GetPositions(lines);
-                isline = false;
+                lines = new Vector3[_lineRenderer.positionCount];
+                _lineRenderer.GetPositions(lines);
+                _isline = false;
                 StageManager.Instance.StateChange(StateType.LineEnd);
             }
-            positionCount = 0;
-            mouseObj.SetActive(false);
+            _positionCount = 0;
+            _mouseObj.enabled = false;
             if (isEnemyMove) {
                 StageManager.Instance.StateChange(StateType.EnemyMove);
             }

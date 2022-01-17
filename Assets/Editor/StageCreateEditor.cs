@@ -69,10 +69,10 @@ public class StageCreateEditor : Editor {
         }
         EditorGUILayout.Space();
 
-        //serializedObject.ApplyModifiedProperties();
-        //if (GUILayout.Button("Save")) {
-        //    EditorUtility.SetDirty(data);
-        //    AssetDatabase.SaveAssets();
-        //}
+        serializedObject.ApplyModifiedProperties();
+        if (GUILayout.Button("•Û‘¶")) {
+            EditorUtility.SetDirty(data);
+            AssetDatabase.SaveAssets();
+        }
     }
 }
